@@ -18,7 +18,7 @@ class ProfileTestCase(TestCase):
         otherwise the old value is restored"""
         if self.old_AUTH_PROFILE_MODULE is None and \
                 hasattr(settings, 'AUTH_PROFILE_MODULE'):
-            del settings.AUTH_PROFILE_MODULE
+            settings.AUTH_PROFILE_MODULE = None
 
         if self.old_AUTH_PROFILE_MODULE is not None:
             settings.AUTH_PROFILE_MODULE = self.old_AUTH_PROFILE_MODULE
@@ -26,7 +26,7 @@ class ProfileTestCase(TestCase):
     def test_site_profile_not_available(self):
         # calling get_profile without AUTH_PROFILE_MODULE set
         if hasattr(settings, 'AUTH_PROFILE_MODULE'):
-            del settings.AUTH_PROFILE_MODULE
+            settings.AUTH_PROFILE_MODULE = None
         user = User.objects.get(username='testclient')
         self.assertRaises(SiteProfileNotAvailable, user.get_profile)
 

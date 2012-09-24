@@ -11,6 +11,7 @@ from django.core.urlresolvers import reverse, NoReverseMatch
 from django.http import QueryDict
 from django.utils.encoding import force_unicode
 from django.utils.html import escape
+from django.template import loader
 from django.test import TestCase
 from django.test.utils import override_settings
 
@@ -35,11 +36,17 @@ class AuthViewsTestCase(TestCase):
         settings.TEMPLATE_DIRS = (
             os.path.join(os.path.dirname(__file__), 'templates'),
         )
+        self.old_TEMPLATE_LOADERS = settings.TEMPLATE_LOADERS
+        settings.TEMPLATE_LOADERS = ('django.template.loaders.filesystem.Loader',
+                                     'django.template.loaders.app_directories.Loader')
+        loader.template_source_loaders = None #Flushing loader cache
 
     def tearDown(self):
         settings.LANGUAGES = self.old_LANGUAGES
         settings.LANGUAGE_CODE = self.old_LANGUAGE_CODE
         settings.TEMPLATE_DIRS = self.old_TEMPLATE_DIRS
+        settings.TEMPLATE_LOADERS = self.old_TEMPLATE_LOADERS
+        loader.template_source_loaders = None #Flushing loader cache
 
     def login(self, password='password'):
         response = self.client.post('/login/', {

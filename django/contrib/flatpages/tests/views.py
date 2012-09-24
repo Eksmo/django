@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.flatpages.models import FlatPage
 from django.test import TestCase
+from django.template import loader
 
 class FlatpageViewTests(TestCase):
     fixtures = ['sample_flatpages']
@@ -20,6 +21,10 @@ class FlatpageViewTests(TestCase):
                 'templates'
             ),
         )
+        self.old_TEMPLATE_LOADERS = settings.TEMPLATE_LOADERS
+        settings.TEMPLATE_LOADERS = ('django.template.loaders.filesystem.Loader',
+                                     'django.template.loaders.app_directories.Loader')
+        loader.template_source_loaders = None
         self.old_LOGIN_URL = settings.LOGIN_URL
         settings.LOGIN_URL = '/accounts/login/'
 
@@ -27,6 +32,8 @@ class FlatpageViewTests(TestCase):
         settings.MIDDLEWARE_CLASSES = self.old_MIDDLEWARE_CLASSES
         settings.TEMPLATE_DIRS = self.old_TEMPLATE_DIRS
         settings.LOGIN_URL = self.old_LOGIN_URL
+        settings.TEMPLATE_LOADERS = self.old_TEMPLATE_LOADERS
+        loader.template_source_loaders = None
 
     def test_view_flatpage(self):
         "A flatpage can be served through a view"
@@ -95,12 +102,18 @@ class FlatpageViewAppendSlashTests(TestCase):
         settings.LOGIN_URL = '/accounts/login/'
         self.old_APPEND_SLASH = settings.APPEND_SLASH
         settings.APPEND_SLASH = True
+        self.old_TEMPLATE_LOADERS = settings.TEMPLATE_LOADERS
+        settings.TEMPLATE_LOADERS = ('django.template.loaders.filesystem.Loader',
+                                     'django.template.loaders.app_directories.Loader')
+        loader.template_source_loaders = None
 
     def tearDown(self):
         settings.MIDDLEWARE_CLASSES = self.old_MIDDLEWARE_CLASSES
         settings.TEMPLATE_DIRS = self.old_TEMPLATE_DIRS
         settings.LOGIN_URL = self.old_LOGIN_URL
         settings.APPEND_SLASH = self.old_APPEND_SLASH
+        settings.TEMPLATE_LOADERS = self.old_TEMPLATE_LOADERS
+        loader.template_source_loaders = None
 
     def test_redirect_view_flatpage(self):
         "A flatpage can be served through a view and should add a slash"
