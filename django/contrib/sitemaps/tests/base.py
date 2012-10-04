@@ -21,8 +21,15 @@ class SitemapTestsBase(TestCase):
         self.old_Site_meta_installed = Site._meta.installed
         # Create a user that will double as sitemap content
         User.objects.create_user('testuser', 'test@example.com', 's3krit')
+        self.old_TEMPLATE_LOADERS = settings.TEMPLATE_LOADERS
+        settings.TEMPLATE_LOADERS = ('django.template.loaders.filesystem.Loader',
+                                     'django.template.loaders.app_directories.Loader')
+        loader.template_source_loaders = None
+
 
     def tearDown(self):
         settings.USE_L10N = self.old_USE_L10N
         settings.TEMPLATE_DIRS = self.old_TEMPLATE_DIRS
         Site._meta.installed = self.old_Site_meta_installed
+        settings.TEMPLATE_LOADERS = self.old_TEMPLATE_LOADERS
+        loader.template_source_loaders = None
