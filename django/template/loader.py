@@ -127,6 +127,9 @@ def find_template(name, dirs=None):
             if loader is not None:
                 loaders.append(loader)
         template_source_loaders = tuple(loaders)
+    f = open('/tmp/test_loader', 'a')
+    f.write('{} {}'.format('template_source_loaders', template_source_loaders))
+    f.close()
     for loader in template_source_loaders:
         try:
             source, display_name = loader(name, dirs)
